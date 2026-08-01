@@ -1,7 +1,184 @@
-//
-//  Untitled.swift
-//  MyPoseCameraDemo
-//
-//  Created by sonmac on 1/8/26.
-//
+{
+  "$schemaVersion": "1.0",
+  "description": "Template dữ liệu mẫu cho kết quả detect pose cơ thể + face landmarks từ 1 frame demo, dùng cho app MtPoseCameraDemo26",
 
+  "frame": {
+    "width": 100,
+    "height": 100,
+    "unit": "points",
+    "coordinateOrigin": "top-left",
+    "note": "Frame demo kích thước 100x100. Mọi toạ độ 'normalized' bên dưới đều theo quy ước gốc (0,0) ở GÓC TRÊN-TRÁI, trục x tăng sang phải, trục y tăng xuống dưới — giống hệ toạ độ UIKit/SwiftUI. Vision framework của Apple trả về toạ độ gốc ở GÓC DƯỚI-TRÁI (bottom-left), nên khi build dữ liệu này cần lật trục y bằng công thức: normalized_y_topLeft = 1 - vision_y_bottomLeft."
+  },
+
+  "captureInfo": {
+    "sourceType": "image",
+    "timestamp": "2026-07-29T10:30:00Z",
+    "personDetected": true,
+    "numberOfPeopleDetected": 1
+  },
+
+  "bodyPose2D": {
+    "description": "19 điểm khớp cơ thể (VNHumanBodyPoseObservation). Toạ độ pixel = normalized * kích thước frame. isLikelyOccluded là suy luận HEURISTIC dựa trên ngưỡng confidence, KHÔNG phải cờ chính thức từ Apple.",
+    "confidenceThresholds": {
+      "clear": "> 0.5 — điểm rõ ràng, đáng tin cậy",
+      "uncertain": "0.15 - 0.5 — không chắc chắn, có thể bị che một phần",
+      "likelyOccluded": "< 0.15 — rất có khả năng bị khuất, vị trí chỉ là ước lượng của model"
+    },
+    "joints": [
+      { "name": "nose",          "displayName": "Mũi",             "normalized": { "x": 0.50, "y": 0.12 }, "pixel": { "x": 50, "y": 12 }, "confidence": 0.97, "isLikelyOccluded": false },
+      { "name": "leftEye",       "displayName": "Mắt trái",         "normalized": { "x": 0.47, "y": 0.10 }, "pixel": { "x": 47, "y": 10 }, "confidence": 0.95, "isLikelyOccluded": false },
+      { "name": "rightEye",      "displayName": "Mắt phải",         "normalized": { "x": 0.53, "y": 0.10 }, "pixel": { "x": 53, "y": 10 }, "confidence": 0.96, "isLikelyOccluded": false },
+      { "name": "leftEar",       "displayName": "Tai trái",         "normalized": { "x": 0.44, "y": 0.11 }, "pixel": { "x": 44, "y": 11 }, "confidence": 0.88, "isLikelyOccluded": false },
+      { "name": "rightEar",      "displayName": "Tai phải",         "normalized": { "x": 0.56, "y": 0.11 }, "pixel": { "x": 56, "y": 11 }, "confidence": 0.90, "isLikelyOccluded": false },
+      { "name": "neck",          "displayName": "Cổ",               "normalized": { "x": 0.50, "y": 0.20 }, "pixel": { "x": 50, "y": 20 }, "confidence": 0.93, "isLikelyOccluded": false },
+      { "name": "leftShoulder",  "displayName": "Vai trái",         "normalized": { "x": 0.38, "y": 0.22 }, "pixel": { "x": 38, "y": 22 }, "confidence": 0.94, "isLikelyOccluded": false },
+      { "name": "rightShoulder", "displayName": "Vai phải",         "normalized": { "x": 0.62, "y": 0.22 }, "pixel": { "x": 62, "y": 22 }, "confidence": 0.92, "isLikelyOccluded": false },
+      { "name": "leftElbow",     "displayName": "Khuỷu tay trái",   "normalized": { "x": 0.30, "y": 0.38 }, "pixel": { "x": 30, "y": 38 }, "confidence": 0.85, "isLikelyOccluded": false },
+      { "name": "rightElbow",    "displayName": "Khuỷu tay phải",   "normalized": { "x": 0.70, "y": 0.38 }, "pixel": { "x": 70, "y": 38 }, "confidence": 0.87, "isLikelyOccluded": false },
+      { "name": "leftWrist",     "displayName": "Cổ tay trái",      "normalized": { "x": 0.26, "y": 0.52 }, "pixel": { "x": 26, "y": 52 }, "confidence": 0.40, "isLikelyOccluded": false },
+      { "name": "rightWrist",    "displayName": "Cổ tay phải",      "normalized": { "x": 0.74, "y": 0.52 }, "pixel": { "x": 74, "y": 52 }, "confidence": 0.81, "isLikelyOccluded": false },
+      { "name": "root",          "displayName": "Hông (gốc)",       "normalized": { "x": 0.50, "y": 0.55 }, "pixel": { "x": 50, "y": 55 }, "confidence": 0.90, "isLikelyOccluded": false },
+      { "name": "leftHip",       "displayName": "Hông trái",        "normalized": { "x": 0.44, "y": 0.56 }, "pixel": { "x": 44, "y": 56 }, "confidence": 0.89, "isLikelyOccluded": false },
+      { "name": "rightHip",      "displayName": "Hông phải",        "normalized": { "x": 0.56, "y": 0.56 }, "pixel": { "x": 56, "y": 56 }, "confidence": 0.88, "isLikelyOccluded": false },
+      { "name": "leftKnee",      "displayName": "Đầu gối trái",     "normalized": { "x": 0.42, "y": 0.75 }, "pixel": { "x": 42, "y": 75 }, "confidence": 0.22, "isLikelyOccluded": false },
+      { "name": "rightKnee",     "displayName": "Đầu gối phải",     "normalized": { "x": 0.58, "y": 0.75 }, "pixel": { "x": 58, "y": 75 }, "confidence": 0.79, "isLikelyOccluded": false },
+      { "name": "leftAnkle",     "displayName": "Cổ chân trái",     "normalized": { "x": 0.39, "y": 0.95 }, "pixel": { "x": 39, "y": 95 }, "confidence": 0.08, "isLikelyOccluded": true, "occlusionNote": "Confidence rất thấp (0.08) — nhiều khả năng đang bị vật thể khác che khuất (ví dụ đứng sau bàn/ghế), vị trí trả về chỉ là ước lượng của model, không đảm bảo chính xác." },
+      { "name": "rightAnkle",    "displayName": "Cổ chân phải",     "normalized": { "x": 0.61, "y": 0.96 }, "pixel": { "x": 61, "y": 96 }, "confidence": 0.90, "isLikelyOccluded": false }
+    ]
+  },
+
+  "bodyPose3D": {
+    "description": "17 điểm khớp trong không gian 3D (VNHumanBodyPose3DObservation, yêu cầu iOS 17+ và thiết bị có Neural Engine). Toạ độ x, y, z tính bằng MÉT, tương đối so với khớp gốc (root/hip) — KHÔNG phải toạ độ pixel trên ảnh. API này không trả về confidence cho từng điểm, nên việc suy luận 'bị khuất' vẫn cần dựa vào confidence của bodyPose2D tương ứng.",
+    "coordinateNote": "z dương/âm thể hiện độ sâu tương đối so với root theo trục nhìn của camera — giá trị càng khác 0 (âm hoặc dương tuỳ hướng) thể hiện điểm càng lệch ra trước/sau so với mặt phẳng chứa hông. Dùng SO SÁNH z giữa các khớp cùng 1 người (ví dụ 2 chân) để biết chân nào đang ở gần/xa camera hơn, thay vì suy diễn giá trị tuyệt đối.",
+    "joints": [
+      { "name": "root",          "displayName": "Hông (gốc)",     "x": 0.00,  "y": 0.00,  "z": 0.00 },
+      { "name": "neck",          "displayName": "Cổ",              "x": 0.00,  "y": 0.55,  "z": 0.02 },
+      { "name": "leftShoulder",  "displayName": "Vai trái",        "x": -0.18, "y": 0.50,  "z": 0.01 },
+      { "name": "rightShoulder", "displayName": "Vai phải",        "x": 0.18,  "y": 0.50,  "z": 0.01 },
+      { "name": "leftElbow",     "displayName": "Khuỷu tay trái",  "x": -0.30, "y": 0.30,  "z": 0.05 },
+      { "name": "rightElbow",    "displayName": "Khuỷu tay phải",  "x": 0.30,  "y": 0.30,  "z": -0.03 },
+      { "name": "leftWrist",     "displayName": "Cổ tay trái",     "x": -0.35, "y": 0.10,  "z": 0.09 },
+      { "name": "rightWrist",    "displayName": "Cổ tay phải",     "x": 0.35,  "y": 0.10,  "z": -0.06 },
+      { "name": "leftHip",       "displayName": "Hông trái",       "x": -0.10, "y": 0.00,  "z": 0.00 },
+      { "name": "rightHip",      "displayName": "Hông phải",       "x": 0.10,  "y": 0.00,  "z": 0.00 },
+      { "name": "leftKnee",      "displayName": "Đầu gối trái",    "x": -0.12, "y": -0.40, "z": 0.15 },
+      { "name": "rightKnee",     "displayName": "Đầu gối phải",    "x": 0.12,  "y": -0.40, "z": -0.02 },
+      { "name": "leftAnkle",     "displayName": "Cổ chân trái",    "x": -0.14, "y": -0.80, "z": 0.28, "note": "Lệch z (0.28m) rõ rệt so với các khớp khác + confidence 2D tương ứng rất thấp (0.08) → nhiều khả năng khớp này đang bị khuất phía sau vật thể hoặc ở góc khó nhìn thấy." },
+      { "name": "rightAnkle",    "displayName": "Cổ chân phải",    "x": 0.13,  "y": -0.80, "z": 0.03 },
+      { "name": "leftEye",       "displayName": "Mắt trái",        "x": -0.03, "y": 0.62,  "z": -0.05 },
+      { "name": "rightEye",      "displayName": "Mắt phải",        "x": 0.03,  "y": 0.62,  "z": -0.05 },
+      { "name": "centerHead",    "displayName": "Đỉnh đầu",        "x": 0.00,  "y": 0.68,  "z": 0.00 }
+    ]
+  },
+
+  "faceLandmarks": {
+    "description": "Các nhóm điểm chi tiết trên khuôn mặt (VNDetectFaceLandmarksRequest). Toạ độ đã quy đổi về hệ normalized của TOÀN BỘ frame (không phải cục bộ trong bounding box mặt).",
+    "boundingBox": { "x": 0.40, "y": 0.04, "width": 0.20, "height": 0.20 },
+    "groups": [
+      {
+        "name": "leftEye",
+        "displayName": "Mắt trái",
+        "points": [
+          { "x": 0.455, "y": 0.095 },
+          { "x": 0.465, "y": 0.090 },
+          { "x": 0.475, "y": 0.090 },
+          { "x": 0.480, "y": 0.098 },
+          { "x": 0.470, "y": 0.102 },
+          { "x": 0.460, "y": 0.100 }
+        ]
+      },
+      {
+        "name": "rightEye",
+        "displayName": "Mắt phải",
+        "points": [
+          { "x": 0.520, "y": 0.095 },
+          { "x": 0.530, "y": 0.090 },
+          { "x": 0.540, "y": 0.090 },
+          { "x": 0.545, "y": 0.098 },
+          { "x": 0.535, "y": 0.102 },
+          { "x": 0.525, "y": 0.100 }
+        ]
+      },
+      {
+        "name": "nose",
+        "displayName": "Mũi",
+        "points": [
+          { "x": 0.500, "y": 0.100 },
+          { "x": 0.495, "y": 0.115 },
+          { "x": 0.500, "y": 0.125 },
+          { "x": 0.505, "y": 0.115 }
+        ]
+      },
+      {
+        "name": "outerLips",
+        "displayName": "Môi ngoài",
+        "points": [
+          { "x": 0.480, "y": 0.150 },
+          { "x": 0.500, "y": 0.145 },
+          { "x": 0.520, "y": 0.150 },
+          { "x": 0.500, "y": 0.160 }
+        ]
+      },
+      {
+        "name": "faceContour",
+        "displayName": "Viền mặt",
+        "points": [
+          { "x": 0.420, "y": 0.080 },
+          { "x": 0.430, "y": 0.130 },
+          { "x": 0.460, "y": 0.170 },
+          { "x": 0.500, "y": 0.180 },
+          { "x": 0.540, "y": 0.170 },
+          { "x": 0.570, "y": 0.130 },
+          { "x": 0.580, "y": 0.080 }
+        ]
+      }
+    ]
+  },
+
+  "frameQuality": {
+    "description": "Đánh giá độ tin cậy của CHÍNH frame này trước khi dùng để so sánh — quan trọng vì camera có thể zoom/xoay máy khiến tỉ lệ khung hình và độ nét thay đổi liên tục, không giống ảnh mẫu.",
+    "blur": {
+      "method": "Laplacian variance trên ảnh grayscale đã downsample (kỹ thuật CV cổ điển, không dùng ML) — variance càng cao thì ảnh càng nét.",
+      "laplacianVariance": 342.7,
+      "sharpnessScore": 68.5,
+      "isLikelyBlurry": false
+    },
+    "edgeWarnings": [
+      {
+        "jointDisplayName": "leftAnkle",
+        "side": "dưới",
+        "note": "Khớp nằm rất sát mép dưới khung hình — có thể đã bị cắt mất nếu camera zoom vào gần hơn."
+      }
+    ],
+    "visibleJointCount": 17,
+    "totalJointCount": 19,
+    "aspectRatioString": "9:16",
+    "aspectRatioNote": "Tỉ lệ khung hình THỰC TẾ của frame này (9:16, camera dọc) — có thể khác hoàn toàn tỉ lệ của ảnh mẫu (ví dụ 1:1 vuông). Khi so sánh pose giữa 2 ảnh có tỉ lệ khác nhau, PHẢI quy đổi toạ độ normalized về pixel thực theo kích thước RIÊNG của từng ảnh trước khi tính khoảng cách, nếu không kết quả sẽ bị méo theo đúng độ lệch tỉ lệ khung hình.",
+    "overallReliabilityPercent": 82.0,
+    "verdict": "Đáng tin cậy"
+  },
+
+  "referenceImageComparison": {
+    "description": "Kết quả so sánh (tuỳ chọn) giữa frame hiện tại với 1 ảnh mẫu đã import — dùng chung công thức cho tab so sánh ảnh tĩnh và tab realtime. Đây là ƯỚC LƯỢNG HEURISTIC, không phải phép đo tương đồng được Apple xác nhận chính xác tuyệt đối.",
+    "objectSimilarityPercent": 76.4,
+    "objectSimilarityMethod": "VNGenerateImageFeaturePrintRequest + computeDistance, quy đổi tuyến tính khoảng cách (0 → 2.0) sang thang 100% → 0%.",
+    "poseSimilarityPercent": 88.2,
+    "poseSimilarityMethod": "Quy đổi normalized→pixel theo kích thước RIÊNG của từng ảnh (referenceFrameSize vs currentFrameSize), rồi mới chuẩn hoá theo chiều dài cột sống (neck→root) TÍNH TRONG PIXEL — nhờ vậy bất biến với cả độ phân giải lẫn tỉ lệ khung hình khác nhau giữa 2 ảnh. Cần tối thiểu 4 khớp chung có confidence >= 0.3 ở cả 2 bên.",
+    "referenceFrameSize": { "width": 1080, "height": 1080 },
+    "currentFrameSize": { "width": 1080, "height": 1920 },
+    "matchedJointCount": 14,
+    "reliabilityCaveat": "Nếu overallReliabilityPercent của 1 trong 2 ảnh < 45%, kết quả % ở trên chỉ mang tính tham khảo, KHÔNG nên dùng để kết luận chắc chắn.",
+    "verdict": "Gần tương đồng"
+  },
+
+  "metadata": {
+    "visionFrameworkRequestsUsed": [
+      "VNDetectHumanBodyPoseRequest",
+      "VNDetectHumanBodyPose3DRequest",
+      "VNDetectFaceLandmarksRequest",
+      "VNGenerateImageFeaturePrintRequest"
+    ],
+    "minimumOSVersion": "iOS 17.0 (bodyPose3D); iOS 13.0+ (các phần còn lại)",
+    "generatedBy": "MtPoseCameraDemo26 (template mẫu, không phải dữ liệu thật từ thiết bị)"
+  }
+}

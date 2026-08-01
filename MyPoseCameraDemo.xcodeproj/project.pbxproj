@@ -10,9 +10,33 @@
 		E558C2FD300C716500EB2196 /* MyPoseCameraDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPoseCameraDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E59389AC301DBAFA00F54687 /* Exceptions for "MyPoseCameraDemo" folder in "MyPoseCameraDemo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PoseDetectionTemplate.json,
+			);
+			target = E558C2FC300C716500EB2196 /* MyPoseCameraDemo */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		E59389AD301DBAFA00F54687 /* Exceptions for "MyPoseCameraDemo" folder in "Compile Sources" phase from "MyPoseCameraDemo" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = E558C2F9300C716500EB2196 /* Sources */;
+			membershipExceptions = (
+				PoseDetectionTemplate.json,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E558C2FF300C716500EB2196 /* MyPoseCameraDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E59389AC301DBAFA00F54687 /* Exceptions for "MyPoseCameraDemo" folder in "MyPoseCameraDemo" target */,
+				E59389AD301DBAFA00F54687 /* Exceptions for "MyPoseCameraDemo" folder in "Compile Sources" phase from "MyPoseCameraDemo" target */,
+			);
 			path = MyPoseCameraDemo;
 			sourceTree = "<group>";
 		};
@@ -246,11 +270,15 @@
 				DEVELOPMENT_TEAM = BF675XF2B6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Ứng dụng cần quyền Camera để quay video và chụp ảnh trực tiếp.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng cần quyền Microphone để ghi âm thanh khi quay video.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Xin quyền truy cập ảnh";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -278,11 +306,15 @@
 				DEVELOPMENT_TEAM = BF675XF2B6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Ứng dụng cần quyền Camera để quay video và chụp ảnh trực tiếp.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng cần quyền Microphone để ghi âm thanh khi quay video.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Xin quyền truy cập ảnh";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

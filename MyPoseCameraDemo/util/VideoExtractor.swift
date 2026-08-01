@@ -8,7 +8,7 @@
 //  exact timestamp, no downscaling).
 //
 
-import AVFoundation
+internal import AVFoundation
 import UIKit
 
 enum VideoExtractorError: LocalizedError {

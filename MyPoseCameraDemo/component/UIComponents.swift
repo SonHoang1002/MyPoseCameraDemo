@@ -1,3 +1,9 @@
+//
+//  UIComponents.swift
+//  MtPoseCameraDemo26
+//
+//  Shared UI building blocks: card style, button styles, section headers.
+//
 
 import SwiftUI
 

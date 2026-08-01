@@ -7,23 +7,17 @@
 
 import SwiftUI
 import PhotosUI
-import AVFoundation
+internal import AVFoundation
 import AVKit
+import Photos
 internal import Combine
-
-enum ExtractionMode {
-    case all
-    case withProgress
-}
 
 @MainActor
 class VideoExtractorViewModel: ObservableObject {
-    // MARK: - Published Properties (Import / Preview)
+    // MARK: - Import / Preview
     @Published var selectedVideo: PhotosPickerItem? {
         didSet {
-            Task {
-                await loadVideo()
-            }
+            Task { await loadVideo() }
         }
     }
     @Published var videoURL: URL?
@@ -31,38 +25,47 @@ class VideoExtractorViewModel: ObservableObject {
     @Published var player: AVPlayer?
     @Published var isLoadingVideo = false
     
-    // MARK: - Published Properties (Extraction)
+    // MARK: - Video Info Analysis
+    @Published var videoInfoReport: VideoInfoReport?
+    @Published var isAnalyzingVideoInfo = false
+    
+    // MARK: - Extraction
     @Published var extractedImages: [UIImage] = []
-    @Published var selectedFrameIndex: Float = 0
-    @Published var isLoading = false
+    @Published var isExtracting = false
     @Published var extractionProgress: Float?
-    @Published var extractionMode: ExtractionMode = .all
     @Published var extractInterval: TimeInterval = 1.0
     
-    // MARK: - Published Properties (Analyze)
-    @Published var isAnalyzing = false
-    @Published var rawFrameImage: UIImage?
-    @Published var optimizedFrameImage: UIImage?
-    @Published var rawReport: ImageQualityReport?
-    @Published var optimizedReport: ImageQualityReport?
+    /// Vị trí slider theo % (0.0 -> 1.0) tương ứng với toàn bộ chiều dài video đã extract.
+    @Published var sliderPercentage: Float = 0
+    
+    // MARK: - Save
+    @Published var isSaving = false
     
     // MARK: - Error handling
     @Published var showError = false
     @Published var errorMessage: String?
+    @Published var showSavedToast = false
     
-    // MARK: - Computed Properties
-    var selectedImage: UIImage? {
-        guard !extractedImages.isEmpty else { return nil }
-        let index = Int(selectedFrameIndex)
-        return extractedImages.indices.contains(index) ? extractedImages[index] : nil
+    // MARK: - Computed
+    
+    var currentIndex: Int {
+        guard !extractedImages.isEmpty else { return 0 }
+        let lastIndex = extractedImages.count - 1
+        let raw = Int((sliderPercentage * Float(lastIndex)).rounded())
+        return min(max(raw, 0), lastIndex)
     }
     
-    /// Thời điểm (giây) tương ứng với vị trí slider hiện tại, dựa theo khoảng interval đã dùng để extract.
-    var currentSelectedTime: TimeInterval {
-        TimeInterval(selectedFrameIndex) * extractInterval
+    var currentImage: UIImage? {
+        guard extractedImages.indices.contains(currentIndex) else { return nil }
+        return extractedImages[currentIndex]
     }
     
-    // MARK: - Private Properties
+    var currentTimeLabel: String {
+        let time = Double(currentIndex) * extractInterval
+        return String(format: "%.1fs", time)
+    }
+    
+    // MARK: - Private
     private let extractor = VideoExtractor()
     
     // MARK: - Load Video
@@ -71,14 +74,10 @@ class VideoExtractorViewModel: ObservableObject {
         guard let selectedVideo = selectedVideo else { return }
         
         isLoadingVideo = true
-        // Reset toàn bộ state cũ khi chọn video mới
         extractedImages = []
-        selectedFrameIndex = 0
+        sliderPercentage = 0
         extractionProgress = nil
-        rawFrameImage = nil
-        optimizedFrameImage = nil
-        rawReport = nil
-        optimizedReport = nil
+        videoInfoReport = nil
         
         do {
             guard let data = try await selectedVideo.loadTransferable(type: Data.self) else {
@@ -92,63 +91,47 @@ class VideoExtractorViewModel: ObservableObject {
             try data.write(to: tempURL)
             
             self.videoURL = tempURL
-            self.videoName = selectedVideo.itemIdentifier ?? tempURL.lastPathComponent
+            self.videoName = tempURL.lastPathComponent
             self.player = AVPlayer(url: tempURL)
             self.isLoadingVideo = false
             self.player?.play()
             
+            await analyzeVideoInfo()
+            
         } catch {
             self.isLoadingVideo = false
-            self.showError = true
-            self.errorMessage = "Failed to load video: \(error.localizedDescription)"
+            showError(message: "Failed to load video: \(error.localizedDescription)")
         }
     }
     
-    // MARK: - Extract Methods
+    // MARK: - Analyze Video Info
     
-    /// Extract all frames without progress tracking
-    func extractAllFrames() async {
-        guard let videoURL = videoURL else {
-            showError(message: "No video selected")
-            return
-        }
+    func analyzeVideoInfo() async {
+        guard let videoURL = videoURL else { return }
         
-        isLoading = true
-        extractionMode = .all
-        extractionProgress = nil
-        extractedImages = []
-        selectedFrameIndex = 0
-        clearAnalysis()
-        
+        isAnalyzingVideoInfo = true
         do {
-            let images = try await extractor.extractAll(
-                videoUrl: videoURL,
-                at: extractInterval
-            )
-            
-            self.extractedImages = images
-            self.selectedFrameIndex = 0
-            self.isLoading = false
-            
+            let report = try await VideoInfoAnalyzer.analyze(url: videoURL)
+            self.videoInfoReport = report
+            self.isAnalyzingVideoInfo = false
         } catch {
-            self.isLoading = false
-            showError(message: error.localizedDescription)
+            self.isAnalyzingVideoInfo = false
+            showError(message: "Phân tích video thất bại: \(error.localizedDescription)")
         }
     }
     
-    /// Extract frames with progress tracking
-    func extractWithProgress() async {
+    // MARK: - Extract
+    
+    func extractVideo() async {
         guard let videoURL = videoURL else {
-            showError(message: "No video selected")
+            showError(message: "Chưa chọn video")
             return
         }
         
-        isLoading = true
-        extractionMode = .withProgress
+        isExtracting = true
         extractionProgress = 0
         extractedImages = []
-        selectedFrameIndex = 0
-        clearAnalysis()
+        sliderPercentage = 0
         
         do {
             let images = try await extractor.extractWithProgress(
@@ -161,80 +144,56 @@ class VideoExtractorViewModel: ObservableObject {
             }
             
             self.extractedImages = images
-            self.selectedFrameIndex = 0
-            self.isLoading = false
+            self.sliderPercentage = 0
+            self.isExtracting = false
             self.extractionProgress = 1.0
             
         } catch {
-            self.isLoading = false
+            self.isExtracting = false
             self.extractionProgress = nil
             showError(message: error.localizedDescription)
         }
     }
     
-    // MARK: - Analyze
+    // MARK: - Save to Photos
     
-    /// Lấy frame tại đúng thời điểm slider hiện tại, tạo 2 bản (raw & optimized),
-    /// rồi phân tích metadata/chất lượng của cả hai để so sánh.
-    func analyzeCurrentFrame() async {
-        guard let videoURL = videoURL else {
-            showError(message: "No video selected")
-            return
-        }
-        guard !extractedImages.isEmpty else {
-            showError(message: "Chưa có frame nào được extract")
+    /// Lưu frame tại vị trí slider hiện tại vào thư viện ảnh.
+    /// Dùng PHPhotoLibrary với quyền "Add Only" (không cần quyền đọc toàn bộ thư viện).
+    func saveCurrentFrameToPhotos() async {
+        guard let image = currentImage else {
+            showError(message: "Không có ảnh để lưu")
             return
         }
         
-        isAnalyzing = true
+        isSaving = true
+        
+        let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+        guard status == .authorized || status == .limited else {
+            isSaving = false
+            showError(message: "Ứng dụng chưa được cấp quyền lưu ảnh. Vui lòng vào Cài đặt > Quyền riêng tư > Ảnh để bật quyền.")
+            return
+        }
         
         do {
-            async let raw = extractor.extractRawFrame(videoUrl: videoURL, at: currentSelectedTime)
-            async let optimized = extractor.extractSingleFrame(videoUrl: videoURL, at: currentSelectedTime)
+            try await PHPhotoLibrary.shared().performChanges {
+                PHAssetCreationRequest.creationRequestForAsset(from: image)
+            }
             
-            let (rawImage, optimizedImage) = try await (raw, optimized)
+            isSaving = false
+            showSavedToast = true
             
-            self.rawFrameImage = rawImage
-            self.optimizedFrameImage = optimizedImage
-            self.rawReport = ImageQualityAnalyzer.analyze(rawImage)
-            self.optimizedReport = ImageQualityAnalyzer.analyze(optimizedImage)
-            self.isAnalyzing = false
+            #if os(iOS)
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+            #endif
+            
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            showSavedToast = false
             
         } catch {
-            self.isAnalyzing = false
-            showError(message: "Analyze thất bại: \(error.localizedDescription)")
+            isSaving = false
+            showError(message: "Lưu ảnh thất bại: \(error.localizedDescription)")
         }
-    }
-    
-    private func clearAnalysis() {
-        rawFrameImage = nil
-        optimizedFrameImage = nil
-        rawReport = nil
-        optimizedReport = nil
-    }
-    
-    // MARK: - Save Methods
-    
-    func saveSelectedFrame() {
-        guard let image = selectedImage else { return }
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        #if os(iOS)
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
-        #endif
-    }
-    
-    func saveAllFrames() {
-        guard !extractedImages.isEmpty else { return }
-        
-        for image in extractedImages {
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        }
-        
-        #if os(iOS)
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
-        #endif
     }
     
     // MARK: - Helpers
